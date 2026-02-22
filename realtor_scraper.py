@@ -3,10 +3,60 @@ import json
 import re
 import requests
 import argparse
+from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 import dotenv
 
 dotenv.load_dotenv()
+
+def parse_relative_date(text):
+    """
+    Parses relative dates like "2 days ago", "just now", "yesterday".
+    Returns a YYYY-MM-DD string or None.
+    """
+    text = text.lower()
+    today = datetime.now()
+
+    if "just now" in text or "today" in text or "hours ago" in text or "minutes ago" in text:
+        return today.strftime("%Y-%m-%d")
+
+    if "yesterday" in text:
+        return (today - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    match = re.search(r'(\d+)\s+days?\s+ago', text)
+    if match:
+        days = int(match.group(1))
+        return (today - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    match = re.search(r'(\d+)\s+weeks?\s+ago', text)
+    if match:
+        weeks = int(match.group(1))
+        return (today - timedelta(weeks=weeks)).strftime("%Y-%m-%d")
+
+    return None
+
+def parse_absolute_date(text):
+    """
+    Parses absolute dates like "Oct 27, 2023", "2023-10-27".
+    Returns YYYY-MM-DD string or None.
+    """
+    # YYYY-MM-DD
+    match = re.search(r'(\d{4}-\d{2}-\d{2})', text)
+    if match:
+        return match.group(1)
+
+    # Month DD, YYYY (e.g., Oct 27, 2023 or October 27, 2023)
+    match = re.search(r'([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})', text)
+    if match:
+        try:
+            date_str = f"{match.group(1)} {match.group(2)} {match.group(3)}"
+            return datetime.strptime(date_str, "%B %d %Y").strftime("%Y-%m-%d")
+        except:
+            try:
+                return datetime.strptime(date_str, "%b %d %Y").strftime("%Y-%m-%d")
+            except:
+                pass
+    return None
 
 def parse_description_with_llm(description):
     """
@@ -36,7 +86,7 @@ def parse_description_with_llm(description):
                     "messages": [
                         {
                             "role": "system",
-                            "content": "You are a real estate assistant. Extract a list of amenities and the listing date (or 'listed on' date) from the property description provided. Return ONLY a JSON object with keys 'amenities' (list of strings) and 'date' (string in YYYY-MM-DD format, or null if not found). Do not include markdown formatting or extra text."
+                            "content": "You are a real estate assistant. Extract a list of amenities and the listing date (or 'listed on' date, or relative date like '2 days ago') from the property description provided. Return ONLY a JSON object with keys 'amenities' (list of strings) and 'date' (string in YYYY-MM-DD format, converting relative dates to absolute based on today, or null if not found). Do not include markdown formatting or extra text."
                         },
                         {
                             "role": "user",
@@ -105,7 +155,6 @@ def parse_description_with_llm(description):
         pass
 
     # Fallback / Simulated Agent Logic
-    # print("  [Agent] Falling back to keyword extraction.")
     keywords = ['pool', 'gym', 'fireplace', 'garage', 'waterfront', 'balcony', 'garden', 'parking', 'sauna']
 
     desc_lower = description.lower()
@@ -113,19 +162,29 @@ def parse_description_with_llm(description):
         if word in desc_lower:
             result['amenities'].append(word.capitalize())
 
-    # Fallback date extraction (simple regex for YYYY-MM-DD)
-    date_match = re.search(r'(\d{4}-\d{2}-\d{2})', description)
-    if date_match:
-        result['date'] = date_match.group(1)
+    # Fallback date extraction
+    # 1. Absolute YYYY-MM-DD
+    abs_date = parse_absolute_date(description)
+    if abs_date:
+        result['date'] = abs_date
     else:
-        # Try finding "Listed on Month DD, YYYY"
-        # Since standard library doesn't have advanced parsing, we keep it simple.
-        pass
+        # 2. Relative date
+        rel_date = parse_relative_date(description)
+        if rel_date:
+            result['date'] = rel_date
 
     return result
 
 def scrape_realtor_agentic(target_date=None):
     results = []
+
+    target_date_obj = None
+    if target_date:
+        try:
+            target_date_obj = datetime.strptime(target_date, "%Y-%m-%d")
+        except ValueError:
+            print(f"[Agent] Invalid date format: {target_date}. Expected YYYY-MM-DD.")
+            return []
 
     with sync_playwright() as p:
         print("[Agent] Launching browser...")
@@ -136,7 +195,8 @@ def scrape_realtor_agentic(target_date=None):
         )
         page = context.new_page()
 
-        url = "https://www.realtor.com/international/ca/ontario/"
+        # Added sort=date-desc to URL
+        url = "https://www.realtor.com/international/ca/ontario/?sort=date-desc"
         print(f"[Agent] Navigating to {url}...")
         page.goto(url, timeout=60000)
         print(f"[Agent] Page title: {page.title()}")
@@ -144,7 +204,9 @@ def scrape_realtor_agentic(target_date=None):
         page_num = 1
         MAX_PAGES = 3 # Safety limit for demonstration
 
-        while True:
+        stop_searching = False
+
+        while not stop_searching:
             print(f"--- Processing Page {page_num} ---")
 
             # Simulate human behavior: waiting and scrolling
@@ -155,7 +217,6 @@ def scrape_realtor_agentic(target_date=None):
 
             # Extract listing URLs
             print("[Agent] Extracting listing links...")
-            # Get all links that match the pattern
             links = page.locator('a[href^="/international/ca/"]').all()
 
             property_urls = []
@@ -250,17 +311,30 @@ def scrape_realtor_agentic(target_date=None):
                         data['extracted_amenities'] = []
                         data['extracted_date'] = None
 
-                    # Date Filtering Logic
-                    if target_date:
-                        if data['extracted_date']:
-                            if data['extracted_date'] != target_date:
-                                print(f"  [Agent] Date mismatch: Found {data['extracted_date']}, expected {target_date}. Skipping.")
-                                new_page.close()
-                                continue
-                            else:
-                                print(f"  [Agent] Date match: {data['extracted_date']}. Keeping.")
+                    # Date Filtering & Stop Logic
+                    if target_date_obj:
+                        current_date_str = data.get('extracted_date')
+                        if current_date_str:
+                            try:
+                                current_date_obj = datetime.strptime(current_date_str, "%Y-%m-%d")
+
+                                if current_date_obj > target_date_obj:
+                                    print(f"  [Agent] Found newer listing ({current_date_str} > {target_date}). Skipping.")
+                                    new_page.close()
+                                    continue
+                                elif current_date_obj == target_date_obj:
+                                    print(f"  [Agent] Found matching listing ({current_date_str}). Keeping.")
+                                elif current_date_obj < target_date_obj:
+                                    print(f"  [Agent] Found older listing ({current_date_str} < {target_date}). Stopping search.")
+                                    stop_searching = True
+                                    new_page.close()
+                                    break # Break inner loop
+
+                            except ValueError:
+                                print(f"  [Agent] Error parsing extracted date: {current_date_str}. Treating as unknown.")
+                                data['date_warning'] = "Date format error."
                         else:
-                            print(f"  [Agent] Date not found in description. Keeping property but flagging.")
+                            print(f"  [Agent] Date not found. Keeping property but flagging.")
                             data['date_warning'] = "Date not found, verification needed."
 
                     # Images
@@ -290,6 +364,9 @@ def scrape_realtor_agentic(target_date=None):
                     except:
                         pass
 
+            if stop_searching:
+                break
+
             # Pagination Logic
             if page_num >= MAX_PAGES:
                 print(f"[Agent] Reached max page limit ({MAX_PAGES}). Stopping.")
@@ -297,7 +374,6 @@ def scrape_realtor_agentic(target_date=None):
 
             print("[Agent] Checking for Next page...")
             try:
-                # Assuming standard pagination, let's look for an anchor with "Next" or an arrow
                 next_btn = page.locator("li.pagination-next a, a[rel='next'], a:has-text('Next')").first
 
                 if next_btn.is_visible():
