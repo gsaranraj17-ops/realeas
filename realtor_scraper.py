@@ -58,53 +58,66 @@ def parse_absolute_date(text):
                 pass
     return None
 
-def parse_description_with_llm(description):
+def analyze_listing_with_llm(page_text, target_date=None):
     """
-    Simulates an agentic LLM step.
-    If OPENROUTER_API_KEY or GEMINI_API_KEY is present, it uses the LLM to extract amenities and date.
-    Otherwise, it uses a fallback deterministic method to extract amenities and tries to find a date.
-    Returns a dict: {'amenities': [...], 'date': 'YYYY-MM-DD' or None}
+    Uses an LLM to analyze the full page text.
+    Extracts amenities and the listing date.
+    Decides the action ('keep', 'skip', 'stop') based on the target_date.
+
+    Returns:
+    {
+        'amenities': [...],
+        'listing_date': 'YYYY-MM-DD' or None,
+        'action': 'keep' | 'skip' | 'stop' | 'unknown'
+    }
     """
     openrouter_key = os.getenv("OPENROUTER_API_KEY")
     gemini_key = os.environ.get("GEMINI_API_KEY")
 
-    result = {"amenities": [], "date": None}
+    result = {"amenities": [], "listing_date": None, "action": "unknown"}
 
     if openrouter_key:
-        print("  [Agent] OpenRouter API key detected. Extracting amenities and date with LLM...")
+        print("  [Agent] OpenRouter API key detected. analyzing full page with LLM...")
         try:
+            system_prompt = (
+                f"You are a real estate scraping assistant. The user is looking for properties listed specifically on {target_date if target_date else 'ANY DATE'}.\n"
+                "The list is sorted by date descending (newest first).\n"
+                "Your task:\n"
+                "1. Extract a list of amenities.\n"
+                "2. Extract the listing date (or 'listed on' date). Convert relative dates (e.g., '2 days ago') to YYYY-MM-DD format based on today.\n"
+                "3. Determine the action:\n"
+                "   - If listing_date MATCHES target_date: 'keep'\n"
+                "   - If listing_date is NEWER than target_date: 'skip'\n"
+                "   - If listing_date is OLDER than target_date: 'stop'\n"
+                "   - If target_date is not provided: 'keep'\n"
+                "   - If listing_date cannot be determined: 'unknown'\n"
+                "Return ONLY a JSON object with keys: 'amenities', 'listing_date', 'action'. Do not include markdown."
+            )
+
             response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
                     "Authorization": f"Bearer {openrouter_key}",
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://localhost:3000", # Required by OpenRouter, dummy value
+                    "HTTP-Referer": "https://localhost:3000",
                     "X-Title": "Realtor Agentic Scraper"
                 },
                 json={
-                    "model": "mistralai/mistral-small-creative", # Using a free/cheap model default
+                    "model": "mistralai/mistral-small-creative",
                     "messages": [
-                        {
-                            "role": "system",
-                            "content": "You are a real estate assistant. Extract a list of amenities and the listing date (or 'listed on' date, or relative date like '2 days ago') from the property description provided. Return ONLY a JSON object with keys 'amenities' (list of strings) and 'date' (string in YYYY-MM-DD format, converting relative dates to absolute based on today, or null if not found). Do not include markdown formatting or extra text."
-                        },
-                        {
-                            "role": "user",
-                            "content": description
-                        }
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": page_text[:10000]} # Limit text length for token limits
                     ]
                 },
-                timeout=10
+                timeout=15
             )
             if response.status_code == 200:
                 content = response.json()['choices'][0]['message']['content']
-                # Clean up potential markdown code blocks
                 content = content.replace("```json", "").replace("```", "").strip()
                 try:
                     parsed = json.loads(content)
                     if isinstance(parsed, dict):
-                        result['amenities'] = parsed.get('amenities', [])
-                        result['date'] = parsed.get('date')
+                        result.update(parsed)
                         return result
                 except:
                     pass
@@ -114,74 +127,89 @@ def parse_description_with_llm(description):
             print(f"  [Agent] OpenRouter Extraction Failed: {e}")
 
     elif gemini_key:
-        print("  [Agent] Gemini API key detected. Extracting amenities and date...")
+        print("  [Agent] Gemini API key detected. analyzing full page with LLM...")
         try:
             url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={gemini_key}"
 
+            prompt_text = (
+                f"Analyze this property listing. Target Date: {target_date if target_date else 'None'}. "
+                "Extract 'amenities' (list) and 'listing_date' (YYYY-MM-DD). "
+                "Decide 'action': 'keep' (match), 'skip' (newer), 'stop' (older), or 'unknown'. "
+                "Assume list is sorted newest first. Return JSON."
+                f"\n\nPage Text: {page_text[:10000]}"
+            )
+
             payload = {
-                "contents": [{
-                    "parts": [{
-                        "text": f"Extract property amenities and listing date from text. Return JSON object with keys 'amenities' (array of strings) and 'date' (YYYY-MM-DD string or null). Description: {description}"
-                    }]
-                }],
+                "contents": [{"parts": [{"text": prompt_text}]}],
                 "generationConfig": {
                     "response_mime_type": "application/json",
                     "response_schema": {
                         "type": "object",
                         "properties": {
                             "amenities": {"type": "array", "items": {"type": "string"}},
-                            "date": {"type": "string"}
+                            "listing_date": {"type": "string"},
+                            "action": {"type": "string", "enum": ["keep", "skip", "stop", "unknown"]}
                         }
                     }
                 }
             }
 
-            response = requests.post(url, json=payload, timeout=10)
+            response = requests.post(url, json=payload, timeout=15)
             response.raise_for_status()
 
-            data = response.json()
-            raw_content = data['candidates'][0]['content']['parts'][0]['text']
-
-            parsed = json.loads(raw_content)
-            result['amenities'] = parsed.get('amenities', [])
-            result['date'] = parsed.get('date')
+            parsed = json.loads(response.json()['candidates'][0]['content']['parts'][0]['text'])
+            result.update(parsed)
             return result
 
         except Exception as e:
             print(f"  [Agent] Gemini Extraction Failed: {e}")
 
     else:
-        # print("  [Agent] No LLM API key found. Using fallback extraction logic.")
+        # Fallback Logic if no LLM
         pass
 
     # Fallback / Simulated Agent Logic
     keywords = ['pool', 'gym', 'fireplace', 'garage', 'waterfront', 'balcony', 'garden', 'parking', 'sauna']
-
-    desc_lower = description.lower()
+    desc_lower = page_text.lower()
     for word in keywords:
         if word in desc_lower:
             result['amenities'].append(word.capitalize())
 
     # Fallback date extraction
-    # 1. Absolute YYYY-MM-DD
-    abs_date = parse_absolute_date(description)
-    if abs_date:
-        result['date'] = abs_date
+    abs_date = parse_absolute_date(page_text)
+    extracted_date = abs_date if abs_date else parse_relative_date(page_text)
+
+    result['listing_date'] = extracted_date
+
+    # Determine Action manually if LLM failed
+    if target_date and extracted_date:
+        try:
+            target_dt = datetime.strptime(target_date, "%Y-%m-%d")
+            extracted_dt = datetime.strptime(extracted_date, "%Y-%m-%d")
+
+            if extracted_dt > target_dt:
+                result['action'] = 'skip'
+            elif extracted_dt < target_dt:
+                result['action'] = 'stop'
+            else:
+                result['action'] = 'keep'
+        except:
+            result['action'] = 'unknown'
+    elif target_date:
+        result['action'] = 'unknown' # Date not found
     else:
-        # 2. Relative date
-        rel_date = parse_relative_date(description)
-        if rel_date:
-            result['date'] = rel_date
+        result['action'] = 'keep' # No target date, keep everything
 
     return result
+
 
 def scrape_realtor_agentic(target_date=None):
     results = []
 
-    target_date_obj = None
+    # Validate target date format early
     if target_date:
         try:
-            target_date_obj = datetime.strptime(target_date, "%Y-%m-%d")
+            datetime.strptime(target_date, "%Y-%m-%d")
         except ValueError:
             print(f"[Agent] Invalid date format: {target_date}. Expected YYYY-MM-DD.")
             return []
@@ -202,7 +230,7 @@ def scrape_realtor_agentic(target_date=None):
         print(f"[Agent] Page title: {page.title()}")
 
         page_num = 1
-        MAX_PAGES = 3 # Safety limit for demonstration
+        MAX_PAGES = 50 # Safety limit
 
         stop_searching = False
 
@@ -298,44 +326,39 @@ def scrape_realtor_agentic(target_date=None):
 
                     # Description & Agentic Extraction
                     try:
-                        description = new_page.locator('body').inner_text()
-                        data['full_text_sample'] = description[:500] + "..."
+                        # Get full page text for LLM analysis
+                        full_page_text = new_page.locator('body').inner_text()
+                        data['full_text_sample'] = full_page_text[:500] + "..."
 
-                        # Extract amenities and date
-                        extraction_result = parse_description_with_llm(description)
-                        data['extracted_amenities'] = extraction_result['amenities']
-                        data['extracted_date'] = extraction_result['date']
+                        # Call Agent
+                        analysis_result = analyze_listing_with_llm(full_page_text, target_date)
 
-                    except:
-                        data['description'] = "No description found"
+                        data['extracted_amenities'] = analysis_result.get('amenities', [])
+                        data['extracted_date'] = analysis_result.get('listing_date')
+                        action = analysis_result.get('action', 'unknown')
+
+                        print(f"  [Agent] Analysis Result: Date={data['extracted_date']}, Action={action}")
+
+                        if target_date:
+                            if action == 'stop':
+                                print(f"  [Agent] Stop condition met (older listing found). Stopping search.")
+                                stop_searching = True
+                                new_page.close()
+                                break
+                            elif action == 'skip':
+                                print(f"  [Agent] Skipping property (newer listing).")
+                                new_page.close()
+                                continue
+                            elif action == 'keep':
+                                print(f"  [Agent] Keeping property (date match).")
+                            else: # unknown
+                                print(f"  [Agent] Date unknown. Keeping property but flagging.")
+                                data['date_warning'] = "Date not found or ambiguous."
+
+                    except Exception as e:
+                        print(f"  [Agent] Error in LLM analysis: {e}")
+                        data['description'] = "Error analyzing page"
                         data['extracted_amenities'] = []
-                        data['extracted_date'] = None
-
-                    # Date Filtering & Stop Logic
-                    if target_date_obj:
-                        current_date_str = data.get('extracted_date')
-                        if current_date_str:
-                            try:
-                                current_date_obj = datetime.strptime(current_date_str, "%Y-%m-%d")
-
-                                if current_date_obj > target_date_obj:
-                                    print(f"  [Agent] Found newer listing ({current_date_str} > {target_date}). Skipping.")
-                                    new_page.close()
-                                    continue
-                                elif current_date_obj == target_date_obj:
-                                    print(f"  [Agent] Found matching listing ({current_date_str}). Keeping.")
-                                elif current_date_obj < target_date_obj:
-                                    print(f"  [Agent] Found older listing ({current_date_str} < {target_date}). Stopping search.")
-                                    stop_searching = True
-                                    new_page.close()
-                                    break # Break inner loop
-
-                            except ValueError:
-                                print(f"  [Agent] Error parsing extracted date: {current_date_str}. Treating as unknown.")
-                                data['date_warning'] = "Date format error."
-                        else:
-                            print(f"  [Agent] Date not found. Keeping property but flagging.")
-                            data['date_warning'] = "Date not found, verification needed."
 
                     # Images
                     print("  [Agent] Extracting images...")
@@ -350,7 +373,6 @@ def scrape_realtor_agentic(target_date=None):
                             if src not in images:
                                 images.append(src)
 
-                    # Keep top 5 distinct high-quality looking images
                     data['images'] = images[:5]
                     print(f"  [Agent] Found {len(images)} images, saving top 5.")
 
