@@ -429,6 +429,15 @@ def scrape_realtor_agentic(target_date=None):
                     print(f"  [Agent] Found {len(images)} images, saving top 5.")
 
                     results.append(data)
+
+                    # Incremental Save (in case of crash or interrupt)
+                    try:
+                        with open("detailed_properties.json", "w") as f:
+                            json.dump(results, f, indent=2)
+                        print(f"  [Agent] Progress saved. Total matches: {len(results)}")
+                    except Exception as e:
+                        print(f"  [Agent] Failed to save progress: {e}")
+
                     new_page.close()
 
                 except Exception as e:
