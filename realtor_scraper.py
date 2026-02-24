@@ -56,6 +56,18 @@ def parse_absolute_date(text):
                 return datetime.strptime(date_str, "%b %d %Y").strftime("%Y-%m-%d")
             except:
                 pass
+
+    # DD Month YYYY (e.g., 27 Oct 2023)
+    match = re.search(r'(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})', text)
+    if match:
+        try:
+            date_str = f"{match.group(1)} {match.group(2)} {match.group(3)}"
+            return datetime.strptime(date_str, "%d %B %Y").strftime("%Y-%m-%d")
+        except:
+            try:
+                return datetime.strptime(date_str, "%d %b %Y").strftime("%Y-%m-%d")
+            except:
+                pass
     return None
 
 def analyze_listing_with_llm(page_text, target_date=None):
@@ -218,15 +230,32 @@ def scrape_realtor_agentic(target_date=None):
         print("[Agent] Launching browser...")
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-            viewport={"width": 1280, "height": 720}
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            viewport={"width": 1920, "height": 1080},
+            locale="en-US",
+            timezone_id="America/Toronto"
         )
         page = context.new_page()
 
         # Added sort=date-desc to URL
-        url = "https://www.realtor.com/international/ca/ontario/?sort=date-desc"
+        base_url = "https://www.realtor.com/international/ca/ontario/"
+        sort_param = "?sort=date-desc"
+        url = base_url + sort_param
+
         print(f"[Agent] Navigating to {url}...")
-        page.goto(url, timeout=60000)
+
+        # Retry logic for initial load
+        for attempt in range(3):
+            try:
+                response = page.goto(url, timeout=60000, wait_until="domcontentloaded")
+                print(f"[Agent] Response status: {response.status if response else 'None'}")
+                if response and response.status == 200:
+                    break
+                else:
+                    print(f"[Agent] Attempt {attempt+1} failed with status {response.status if response else 'None'}. Retrying...")
+            except Exception as e:
+                print(f"[Agent] Attempt {attempt+1} navigation failed: {e}")
+
         print(f"[Agent] Page title: {page.title()}")
 
         page_num = 1
@@ -245,7 +274,30 @@ def scrape_realtor_agentic(target_date=None):
 
             # Extract listing URLs
             print("[Agent] Extracting listing links...")
+
+            # Wait for listings to appear
+            try:
+                page.wait_for_selector('a[href^="/international/ca/"]', timeout=10000)
+            except:
+                print("[Agent] Timeout waiting for listing links.")
+
             links = page.locator('a[href^="/international/ca/"]').all()
+
+            if not links:
+                print("[Agent] No links found. Dumping page content for debug...")
+                with open(f"debug_page_{page_num}.html", "w", encoding="utf-8") as f:
+                    f.write(page.content())
+
+                # If scraping failed on page 1 with sort, try without sort
+                if page_num == 1 and "sort=date-desc" in page.url:
+                    print("[Agent] No listings found with sort parameter. Retrying without sort...")
+                    print("[Agent] WARNING: Date sorting failed. Stop-on-date logic may be less effective (listings might not be chronological).")
+                    url = base_url
+                    try:
+                        page.goto(url, timeout=60000, wait_until="domcontentloaded")
+                        continue # Restart loop for page 1
+                    except:
+                        pass
 
             property_urls = []
             for link in links:
