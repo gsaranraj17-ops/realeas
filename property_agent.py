@@ -4,8 +4,8 @@ import os
 import time
 from datetime import datetime
 from dotenv import load_dotenv
+import requests
 from playwright.async_api import async_playwright
-from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -16,10 +16,6 @@ class PropertyAgent:
         if not self.api_key:
             print("Warning: OPENROUTER_API_KEY or OPENAI_API_KEY not found in environment.")
 
-        self.client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=self.api_key or "sk-mock-key",
-        )
         self.data_file = "detailed_properties.json"
         self.visited_urls = set()
         self.mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
@@ -119,9 +115,9 @@ class PropertyAgent:
         """
         Uses LLM to parse text content and extract property details.
         """
-        prompt = f"""
+        system_prompt = f"""
         You are a real estate data extraction agent.
-        Extract the available property listings from the following text content scraped from a website ({url}).
+        Extract the available property listings from the text content provided by the user, which was scraped from a website ({url}).
         Return a JSON array of objects. Each object should have:
         - "name": Name of the community or property.
         - "location": City, Address, or Region.
@@ -133,9 +129,6 @@ class PropertyAgent:
 
         If no properties are found, return an empty array [].
         Do not include any markdown formatting (like ```json), just the raw JSON string.
-
-        Text Content:
-        {text_content}
         """
 
         if self.mock_llm:
@@ -162,16 +155,29 @@ class PropertyAgent:
             ]
 
         try:
-            response = self.client.chat.completions.create(
-                model="openai/gpt-3.5-turbo", # OpenRouter maps this to a suitable model or use a specific one like 'google/gemini-pro-1.5' if available/preferred
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant that outputs JSON."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.2,
+            response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://localhost:3000", # Required by OpenRouter for free/low-tier usage tracking
+                    "X-Title": "Realtor Agentic Scraper"
+                },
+                json={
+                    "model": "mistralai/mistral-small-creative", # Or "openai/gpt-3.5-turbo"
+                    "messages": [
+                        {"role": "system", "content": "You are a helpful assistant that outputs JSON. " + system_prompt},
+                        {"role": "user", "content": text_content[:15000]} # Limit text length for token limits. text_content here is actually combined_content from the caller
+                    ]
+                }
             )
 
-            content = response.choices[0].message.content.strip()
+            if response.status_code != 200:
+                print(f"LLM API Error: {response.status_code} - {response.text}")
+                return []
+
+            content = response.json()['choices'][0]['message']['content'].strip()
+
             # Remove markdown code blocks if present
             if content.startswith("```json"):
                 content = content[7:]
