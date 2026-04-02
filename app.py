@@ -51,7 +51,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def slugify(text: str) -> str:
-    text = text.lower().strip()
+    text = (text or "").lower().strip()
     text = re.sub(r"[^\w\s-]", "", text)
     text = re.sub(r"[\s_]+", "-", text)
     return text[:80] or "unnamed"
@@ -64,27 +64,77 @@ def load_communities() -> list[dict]:
         return json.load(f)
 
 
+def _get_name(c: dict) -> str:
+    return c.get("community_name") or c.get("name") or "Unnamed"
+
+
+def _get_hero_image(community: dict) -> str:
+    """Get the best hero image URL for a community."""
+    # From all_images
+    for img in (community.get("all_images") or []):
+        if img.get("url"):
+            return img["url"]
+    # Fallback: first property image
+    for unit in (community.get("properties") or []):
+        if unit.get("image_url"):
+            return unit["image_url"]
+        for img in (unit.get("property_images") or []):
+            if img.get("url"):
+                return img["url"]
+    return ""
+
+
+def _get_unit_image(unit: dict) -> str:
+    """Get the best image URL for a unit."""
+    if unit.get("image_url"):
+        return unit["image_url"]
+    for img in (unit.get("property_images") or []):
+        if img.get("url"):
+            return img["url"]
+    return ""
+
+
 def get_local_images(community: dict) -> list[str]:
+    """Get all available image URLs for the gallery."""
     urls = []
-    for unit in community.get("properties") or []:
-        local = unit.get("local_image", "")
-        if not local:
-            continue
-        candidates = [
-            Path(__file__).parent / local,
-            Path(local),
-        ]
-        for p in candidates:
-            if p.exists():
-                urls.append(f"/images/{local}")
-                break
+    seen = set()
+    # Community-level images
+    for img in (community.get("all_images") or []):
+        u = img.get("url", "")
+        if u and u not in seen:
+            seen.add(u)
+            urls.append(u)
+    # Property images
+    for unit in (community.get("properties") or []):
+        for img in (unit.get("property_images") or []):
+            u = img.get("url", "")
+            if u and u not in seen:
+                seen.add(u)
+                urls.append(u)
     return urls
 
 
+def _clean(val) -> str:
+    """Return empty string for placeholder/missing values."""
+    if val is None:
+        return ""
+    s = str(val).strip()
+    if s.lower() in ("not specified", "n/a", "none", "null", "inquire",
+                       "inquire for pricing", "available upon request", "tbd",
+                       "not available", "unknown", "not mentioned"):
+        return ""
+    return s
+
+
 def generate_description(community: dict) -> str:
-    name     = community.get("name", "")
-    location = community.get("location", "")
-    builder  = community.get("builder", "Mattamy Homes")
+    # Use existing description if available
+    existing = _clean(community.get("description", ""))
+    if existing and len(existing) > 50:
+        return existing
+
+    name     = _get_name(community)
+    location = _clean(community.get("location"))
+    builder  = _clean(community.get("builder")) or "the developer"
     units    = community.get("properties") or []
 
     unit_lines = "\n".join(
@@ -168,7 +218,7 @@ PAGE = r"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{{ name }} – Mattamy Homes</title>
+  <title>{{ name }} – {{ builder }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -537,7 +587,7 @@ PAGE = r"""<!DOCTYPE html>
 <!-- ═══ EDIT TOOLBAR ═══ -->
 <div class="edit-toolbar" id="editToolbar">
   <div class="tb-left">
-    <span class="tb-logo">MATTAMY</span>
+    <span class="tb-logo">{{ builder | upper }}</span>
     <span class="tb-status draft" id="tbStatus">DRAFT</span>
     <span class="tb-hint" id="tbHint">Review content, then confirm to publish</span>
   </div>
@@ -609,17 +659,17 @@ PAGE = r"""<!DOCTYPE html>
   <div class="hero-bg" data-editable-img="hero" style="background-image:url('{{ hero_image_url }}')"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <p class="eyebrow" data-editable="eyebrow">{{ builder }} &nbsp;·&nbsp; {{ location }}</p>
+    <p class="eyebrow" data-editable="eyebrow">{{ builder }} &nbsp;·&nbsp; {{ location }}{% if status %} &nbsp;·&nbsp; {{ status }}{% endif %}</p>
     <h1 class="hero-title" data-editable="hero-title">
       {% set words = name.split() %}
       {{ words[0] }}<br><em>{{ words[1:] | join(' ') }}</em>
     </h1>
     <div class="hero-pills">
+      {% if status %}<span class="pill"><b>{{ status }}</b></span><span class="sep"></span>{% endif %}
       <span class="pill"><b>{{ units|length }}</b> Unit{{ 's' if units|length != 1 else '' }}</span>
       <span class="sep"></span>
-      <span class="pill">{{ location }}, Ontario</span>
-      <span class="sep"></span>
-      <span class="pill">{{ builder }}</span>
+      <span class="pill">{{ location }}</span>
+      {% if price_range %}<span class="sep"></span><span class="pill"><b>{{ price_range }}</b></span>{% endif %}
     </div>
   </div>
 </section>
@@ -648,10 +698,10 @@ PAGE = r"""<!DOCTYPE html>
 <section class="gallery-section">
   <div class="wrap">
     <p class="s-label">Gallery</p>
-    <h2 class="s-title">Photos from Site</h2>
+    <h2 class="s-title">Photos &amp; Renderings</h2>
     <div class="gallery">
-      {% for img_url in local_images %}
-      <img src="{{ img_url }}" alt="{{ name }}" loading="lazy" data-editable-img="gallery-{{ loop.index0 }}">
+      {% for img_url in local_images[:12] %}
+      <img src="{{ img_url }}" alt="{{ name }}" loading="lazy" onclick="openLb(this.src)" data-editable-img="gallery-{{ loop.index0 }}">
       {% endfor %}
     </div>
   </div>
@@ -666,7 +716,8 @@ PAGE = r"""<!DOCTYPE html>
     <h2 class="s-title">Properties at {{ name }}</h2>
     <div class="units-grid">
       {% for unit in units %}
-        {% set sl = unit.status | lower %}
+        {% if unit.address or unit.floorplan or unit.price %}
+        {% set sl = (unit.status or '') | lower %}
         {% if 'ready' in sl or 'available' in sl %}{% set bc='b-ready' %}
         {% elif 'coming soon' in sl or 'launching' in sl %}{% set bc='b-soon' %}
         {% elif 'sold' in sl %}{% set bc='b-sold' %}
@@ -674,17 +725,24 @@ PAGE = r"""<!DOCTYPE html>
       <div class="card" style="animation-delay:{{ loop.index0 * 0.08 }}s">
         <div class="card-img">
           {% if unit.image_url %}
-          <img src="{{ unit.image_url }}" alt="{{ unit.address }}" loading="lazy" data-editable-img="unit-{{ loop.index0 }}">
+          <img src="{{ unit.image_url }}" alt="{{ unit.address or unit.floorplan }}" loading="lazy" onclick="openLb(this.src)" data-editable-img="unit-{{ loop.index0 }}">
           {% endif %}
-          <span class="badge {{ bc }}" data-editable="badge-{{ loop.index0 }}">{{ unit.status or 'N/A' }}</span>
+          {% if unit.status %}<span class="badge {{ bc }}" data-editable="badge-{{ loop.index0 }}">{{ unit.status }}</span>{% endif %}
         </div>
         <div class="card-body">
-          <h3 class="card-addr" data-editable="addr-{{ loop.index0 }}">{{ unit.address }}</h3>
+          {% if unit.address %}<h3 class="card-addr" data-editable="addr-{{ loop.index0 }}">{{ unit.address }}</h3>{% endif %}
           {% if unit.floorplan %}<p class="card-fp" data-editable="fp-{{ loop.index0 }}">{{ unit.floorplan }}</p>{% endif %}
-          {% if unit.description %}<p class="card-desc" data-editable="desc-{{ loop.index0 }}">{{ unit.description.replace('\n',' · ') }}</p>{% endif %}
-          <p class="card-price" data-editable="price-{{ loop.index0 }}">{{ unit.price or 'Inquire for Pricing' }}</p>
+          {% set specs = [] %}
+          {% if unit.bedrooms %}{% set _ = specs.append(unit.bedrooms ~ ' bed') %}{% endif %}
+          {% if unit.bathrooms %}{% set _ = specs.append(unit.bathrooms ~ ' bath') %}{% endif %}
+          {% if unit.sqft %}{% set _ = specs.append(unit.sqft ~ ' sqft') %}{% endif %}
+          {% if unit.garage %}{% set _ = specs.append(unit.garage) %}{% endif %}
+          {% if specs %}<p class="card-fp">{{ specs | join(' · ') }}</p>{% endif %}
+          {% if unit.description %}<p class="card-desc" data-editable="desc-{{ loop.index0 }}">{{ unit.description[:200] }}</p>{% endif %}
+          {% if unit.price %}<p class="card-price" data-editable="price-{{ loop.index0 }}">{{ unit.price }}</p>{% endif %}
         </div>
       </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -749,8 +807,9 @@ PAGE = r"""<!DOCTYPE html>
 <!-- FOOTER -->
 <footer>
   <p>&copy; {{ year }} {{ builder }} &nbsp;·&nbsp;
-    <a href="{{ url }}" target="_blank">mattamyhomes.com</a>
-    &nbsp;·&nbsp; Prices & availability subject to change.
+    <a href="{{ url }}" target="_blank">{{ builder }}</a>
+    &nbsp;·&nbsp; Prices &amp; availability subject to change.
+    {% if contact_phone %}&nbsp;·&nbsp; {{ contact_phone }}{% endif %}
   </p>
 </footer>
 
@@ -1103,63 +1162,83 @@ p{color:#7a7a7a;font-size:14px;margin-top:10px;line-height:1.7}code{color:#c9a05
 def create_link():
     slug        = request.args.get("community", "").strip().lower()
     communities = load_communities()
-    all_slugs   = [slugify(c.get("name", "")) for c in communities]
+    all_slugs   = [slugify(_get_name(c)) for c in communities]
 
     if not slug:
         return render_template_string(NOT_FOUND, slug="(none)",
                                       available=", ".join(all_slugs)), 404
 
-    community = next((c for c in communities if slugify(c.get("name","")) == slug), None)
+    community = next((c for c in communities if slugify(_get_name(c)) == slug), None)
 
     if not community:
         app.logger.warning("Not found: '%s'. Available: %s", slug, all_slugs)
         return render_template_string(NOT_FOUND, slug=slug,
                                       available="<br>".join(all_slugs)), 404
 
+    name           = _get_name(community)
     units          = community.get("properties") or []
-    hero_image_url = units[0].get("image_url", "") if units else ""
+    hero_image_url = _get_hero_image(community)
     local_images   = get_local_images(community)
     description    = generate_description(community)
+    builder        = _clean(community.get("builder")) or "Branthaven"
+    location       = _clean(community.get("location")) or ""
+    status         = _clean(community.get("status")) or ""
+    price_range    = _clean(community.get("price_range")) or ""
+    contact_phone  = _clean(community.get("contact_phone")) or ""
 
-    app.logger.info("Serving [%s] | %d units | %d local imgs | desc=%d chars",
-                    community.get("name"), len(units), len(local_images), len(description))
+    # Clean unit data for template
+    clean_units = []
+    for unit in units:
+        clean_units.append({
+            "address":     _clean(unit.get("address")),
+            "floorplan":   _clean(unit.get("floorplan")),
+            "price":       _clean(unit.get("price")),
+            "status":      _clean(unit.get("status")),
+            "bedrooms":    _clean(unit.get("bedrooms")),
+            "bathrooms":   _clean(unit.get("bathrooms")),
+            "sqft":        _clean(unit.get("sqft")),
+            "garage":      _clean(unit.get("garage")),
+            "description": _clean(unit.get("description")),
+            "image_url":   _get_unit_image(unit),
+        })
 
-    # ── Notify: link was opened ───────────────────────────────────────────────
+    app.logger.info("Serving [%s] | %s | %d units | %d imgs | desc=%d chars",
+                    name, status, len(clean_units), len(local_images), len(description))
+
     page_url = request.url
     _send_email(
-        subject=f"🔗 Link Opened: {community.get('name')} – {datetime.now().strftime('%b %d %H:%M')}",
+        subject=f"🔗 Link Opened: {name} – {datetime.now().strftime('%b %d %H:%M')}",
         body=f"""
 <html><body style="font-family:Arial,sans-serif;color:#222;padding:24px">
   <h2 style="color:#0f1923">Landing Page Accessed</h2>
   <table style="border-collapse:collapse;width:100%;max-width:480px">
     <tr><td style="padding:8px 0;color:#888;width:140px">Community</td>
-        <td style="padding:8px 0"><b>{community.get('name')}</b></td></tr>
+        <td style="padding:8px 0"><b>{name}</b></td></tr>
+    <tr><td style="padding:8px 0;color:#888">Status</td>
+        <td style="padding:8px 0">{status}</td></tr>
     <tr><td style="padding:8px 0;color:#888">Location</td>
-        <td style="padding:8px 0">{community.get('location')}</td></tr>
+        <td style="padding:8px 0">{location}</td></tr>
     <tr><td style="padding:8px 0;color:#888">Units</td>
-        <td style="padding:8px 0">{len(units)}</td></tr>
+        <td style="padding:8px 0">{len(clean_units)}</td></tr>
     <tr><td style="padding:8px 0;color:#888">Time</td>
         <td style="padding:8px 0">{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</td></tr>
     <tr><td style="padding:8px 0;color:#888">URL</td>
         <td style="padding:8px 0"><a href="{page_url}" style="color:#c9a050">{page_url}</a></td></tr>
   </table>
-  <p style="margin-top:24px">
-    <a href="{page_url}" style="background:#0f1923;color:#c9a050;padding:10px 20px;
-       text-decoration:none;border-radius:3px;font-size:12px;letter-spacing:1px">
-      VIEW PAGE →
-    </a>
-  </p>
 </body></html>"""
     )
 
     return render_template_string(
         PAGE,
-        name           = community.get("name", ""),
-        location       = community.get("location", ""),
-        builder        = community.get("builder", "Mattamy Homes"),
+        name           = name,
+        location       = location,
+        builder        = builder,
+        status         = status,
+        price_range    = price_range,
+        contact_phone  = contact_phone,
         url            = community.get("url", "#"),
         slug           = slug,
-        units          = units,
+        units          = clean_units,
         hero_image_url = hero_image_url,
         local_images   = local_images,
         description    = description,
@@ -1373,7 +1452,7 @@ def health():
         "confirmed_slugs": [p.stem for p in confirmed],
         "data_file":       DATA_FILE,
         "data_exists":     os.path.exists(DATA_FILE),
-        "slugs":           [slugify(c.get("name","")) for c in communities],
+        "slugs":           [slugify(_get_name(c)) for c in communities],
     })
 
 
