@@ -1,0 +1,1049 @@
+[
+    {
+        "community_name": "Winona County",
+        "location": "Stoney Creek, Hamilton",
+        "builder": "Branthaven",
+        "status": "COMING SOON",
+        "url": "https://www.branthaven.com/communities/winona",
+        "description": "Anchored in the protected Niagara Escarpment, Winona County is poised to become the premier destination for inspired county living - reserved for those who value the slower pace that a step outside the city offers.",
+        "price_range": "Not specified",
+        "completion_date": "Not specified",
+        "total_units": "Not specified",
+        "features": [],
+        "amenities": [],
+        "property_types": [
+            "Detached",
+            "Freehold 2-Storey Townhome"
+        ],
+        "contact_phone": "905-333-8364",
+        "properties": [
+            {
+                "address": "Not specified",
+                "floorplan": "33’ Detached Home",
+                "price": "Not specified",
+                "status": "Not specified",
+                "bedrooms": "4",
+                "bathrooms": "Not specified",
+                "sqft": "2073 - 2265",
+                "garage": "1.5 car",
+                "description": "33’ Detached Home – 4 Bdrm & 1.5-Car Garage - 2073 Sq.Ft. – 2265 Sq.Ft.",
+                "features": [],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/bgraphical/styles/winona/assets/getty-images-WYWgu-vx73I-unsplash-1000-extended.jpg",
+                "local_image": "data/images/wwwbranthavencom/winona-county/img_002.jpg"
+            },
+            {
+                "address": "Not specified",
+                "floorplan": "36’ Detached Home",
+                "price": "Not specified",
+                "status": "Not specified",
+                "bedrooms": "4 & 5",
+                "bathrooms": "Not specified",
+                "sqft": "2501 - 2976",
+                "garage": "2 car",
+                "description": "36’ Detached Home – 4&5 Bdrm & 2-Car Garage - 2501 Sq.Ft. – 2976 Sq.Ft.",
+                "features": [],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/bgraphical/styles/winona/assets/getty-images-WYWgu-vx73I-unsplash-1000-extended.jpg",
+                "local_image": "data/images/wwwbranthavencom/winona-county/img_002.jpg"
+            },
+            {
+                "address": "Not specified",
+                "floorplan": "40’ Detached Home",
+                "price": "Not specified",
+                "status": "Not specified",
+                "bedrooms": "4 & 5",
+                "bathrooms": "Not specified",
+                "sqft": "2804 - 3492",
+                "garage": "2 car",
+                "description": "40’ Detached Home – 4&5 Bdrm & 2-Car Garage - 2804 Sq.Ft. – 3492 Sq.Ft.",
+                "features": [],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/bgraphical/styles/winona/assets/getty-images-WYWgu-vx73I-unsplash-1000-extended.jpg",
+                "local_image": "data/images/wwwbranthavencom/winona-county/img_002.jpg"
+            },
+            {
+                "address": "Not specified",
+                "floorplan": "40’ Detached Home (Main Floor Primary)",
+                "price": "Not specified",
+                "status": "Not specified",
+                "bedrooms": "4 & 5",
+                "bathrooms": "Not specified",
+                "sqft": "Not specified",
+                "garage": "2 car",
+                "description": "40’ Detached Home – 4&5 Bdrm (Main Floor Primary) & 2-Car Garage",
+                "features": [],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/bgraphical/styles/winona/assets/getty-images-WYWgu-vx73I-unsplash-1000-extended.jpg",
+                "local_image": "data/images/wwwbranthavencom/winona-county/img_002.jpg"
+            }
+        ],
+        "all_images": [
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/bgraphical/styles/winona/assets/getty-images-WYWgu-vx73I-unsplash-1000-extended.jpg",
+                "local_path": "data/images/wwwbranthavencom/winona-county/img_002.jpg",
+                "alt": "",
+                "width": 1920,
+                "height": 768
+            }
+        ],
+        "id": 1,
+        "first_seen": "2026-04-02T20:32:26.443716",
+        "last_seen": "2026-04-02T20:32:26.443731",
+        "source_domain": "www.branthaven.com"
+    },
+    {
+        "community_name": "Joy Towns Niagara",
+        "location": "Niagara Falls, Ontario",
+        "builder": "Branthaven",
+        "status": "COMING SOON",
+        "url": "https://www.branthaven.com/communities/joytowns",
+        "description": "Joy Towns Niagara is a curated collection of 2 & 3 storey townhomes, perfect for growing families, multi-generational households, real estate investors, and shared home ownership. With FlexFit™ floorplan options you can choose what’s right for you. From 2-5 bedroom options, finished basements and even a legal secondary suite, Joy Towns Niagara makes your home ownership dream truly attainable.",
+        "price_range": "From the upper $500’s",
+        "completion_date": "",
+        "total_units": "",
+        "features": [
+            "FlexFit™ floorplans",
+            "2-5 bedroom options",
+            "finished basements",
+            "legal secondary suite"
+        ],
+        "amenities": [],
+        "property_types": [
+            "Townhome"
+        ],
+        "contact_phone": "905-333-8364",
+        "properties": [],
+        "all_images": [
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/bgraphical/styles/joy/assets/joy_gradient-2500w.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_001.jpg",
+                "alt": "",
+                "width": 1920,
+                "height": 2080
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/NORM-LI_230905_LivelyBedroom_Update_VF_03-1700.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_006.jpg",
+                "alt": "",
+                "width": 860,
+                "height": 516
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/NORM-LI_230906_KidsBedroom_VF_04-1700.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_007.jpg",
+                "alt": "",
+                "width": 860,
+                "height": 516
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/NORM-LI_230907_ZenBedroom_VF_05-1700.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_008.jpg",
+                "alt": "",
+                "width": 860,
+                "height": 516
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/NORM-LI_230907_LivingRoom2_Update_VF_03-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_009.jpg",
+                "alt": "",
+                "width": 860,
+                "height": 516
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/NORM-LI_230823_INT_Dining_VF_00-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_010.jpg",
+                "alt": "",
+                "width": 860,
+                "height": 516
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/202S-TH-Style-1-R3-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_011.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/163S-Front-R1-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_012.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/Parks-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_013.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/Niagara-Falls-1250.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_014.jpg",
+                "alt": "",
+                "width": 461,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/Winery-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_015.jpg",
+                "alt": "",
+                "width": 461,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/Cafe-Style-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_016.jpg",
+                "alt": "",
+                "width": 461,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/Vista-1000.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_017.jpg",
+                "alt": "",
+                "width": 461,
+                "height": 634
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/tyson-u8madXWzZB0-unsplash-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_018.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 461
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/Millenials-1250.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_019.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 461
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/08/getty-images-h8BaN69F-28-unsplash-1500.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_020.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 461
+            },
+            {
+                "url": "https://www.branthaven.com/app/uploads/2023/09/Mom-1200.jpg",
+                "local_path": "data/images/wwwbranthavencom/joy-towns-niagara/img_021.jpg",
+                "alt": "",
+                "width": 576,
+                "height": 461
+            }
+        ],
+        "id": 2,
+        "first_seen": "2026-04-02T20:33:01.112418",
+        "last_seen": "2026-04-02T20:33:01.112424",
+        "source_domain": "www.branthaven.com"
+    },
+    {
+        "community_name": "Millcroft",
+        "location": "Burlington, Ontario",
+        "builder": "Branthaven",
+        "status": "QUICKSTART",
+        "url": "https://www.branthaven.com/quickstart/millcroft",
+        "description": "Large 3-Storey Townhomes. Designer-Upgrades. Luxury Modern Towns In Prestigious Millcroft. Over $154K in upgrades included.",
+        "price_range": "From $939,900 to $1,349,990",
+        "completion_date": null,
+        "total_units": null,
+        "features": [
+            "Large 3-Storey Townhomes",
+            "Designer-Upgrades",
+            "Luxury Modern Towns"
+        ],
+        "amenities": [],
+        "property_types": [
+            "Townhome"
+        ],
+        "contact_phone": "905-333-6151",
+        "properties": [
+            {
+                "address": "2273 Turnberry Road, Unit 38, Burlington",
+                "floorplan": "Mayfair",
+                "price": "$939,900",
+                "status": "Available",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1,740",
+                "garage": null,
+                "description": "3-Storey Townhome.",
+                "features": [
+                    "Over $154K in upgrades"
+                ],
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/lot38-ext-rendering.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_000.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-9.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_001.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-12.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_002.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-13.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_003.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-18.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_004.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    }
+                ],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/lot38-ext-rendering.jpg",
+                "local_image": "data/images/wwwbranthavencom/millcroft/img_000.jpg"
+            },
+            {
+                "address": "2273 Turnberry Road, Unit 42, Burlington",
+                "floorplan": "Mayfair",
+                "price": "$999,990",
+                "status": "Available",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1,740",
+                "garage": null,
+                "description": "3-Storey Townhome.",
+                "features": [
+                    "Over $100K in upgrades"
+                ],
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-10.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_006.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-17.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_007.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-22.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_008.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-33.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_009.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    }
+                ],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-10.jpg",
+                "local_image": "data/images/wwwbranthavencom/millcroft/img_006.jpg"
+            },
+            {
+                "address": "2273 Turnberry Road, Unit 42, Burlington",
+                "floorplan": "Mayfair",
+                "price": "$1,004,990",
+                "status": "Available",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1,740",
+                "garage": null,
+                "description": "3-Storey Townhome.",
+                "features": [
+                    "Over $129K in upgrades"
+                ],
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-10.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_006.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-17.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_007.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-22.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_008.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-33.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/img_009.jpg",
+                        "alt": "",
+                        "width": 318,
+                        "height": 318
+                    }
+                ],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-10.jpg",
+                "local_image": "data/images/wwwbranthavencom/millcroft/img_006.jpg"
+            },
+            {
+                "address": "Lot 38, Millcroft, Burlington, Ontario",
+                "floorplan": "Millcroft Model",
+                "price": "Available upon request",
+                "status": "Move-In Ready",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1,800",
+                "garage": "2-car garage",
+                "lot_size": "40' x 100'",
+                "stories": "2",
+                "description": "This stunning Millcroft model features a spacious open-concept layout with modern finishes, perfect for family living and entertaining. The kitchen boasts high-end appliances and a large island, while the living area is bright and inviting. The master suite includes a luxurious ensuite bathroom and walk-in closet.",
+                "features": [
+                    "Open-concept design",
+                    "High-end kitchen appliances",
+                    "Large kitchen island",
+                    "Bright living area",
+                    "Luxurious master suite",
+                    "Ensuite bathroom",
+                    "Walk-in closet",
+                    "2-car garage"
+                ],
+                "specifications": {
+                    "Heating": "Forced air, gas",
+                    "Cooling": "Central air conditioning",
+                    "Flooring": "Hardwood and tile",
+                    "Roof": "Asphalt shingles",
+                    "Exterior": "Brick and siding"
+                },
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/getty-images-uEHOdOdtJ5A-unsplash.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-38-millcroft-burlington-ontario/img_002.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/explore-1024x654.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-38-millcroft-burlington-ontario/img_003.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/family-3.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-38-millcroft-burlington-ontario/img_004.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/style-ideas.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-38-millcroft-burlington-ontario/img_005.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/get-connected-1024x683.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-38-millcroft-burlington-ontario/img_006.jpg",
+                        "alt": ""
+                    }
+                ],
+                "property_url": "https://www.branthaven.com/quickstart/millcroft/lot-38",
+                "local_image": "data/images/wwwbranthavencom/millcroft/lot-38-millcroft-burlington-ontario/img_002.jpg"
+            },
+            {
+                "address": "Lot 42, Millcroft, Burlington, Ontario",
+                "floorplan": "Millcroft Model",
+                "price": "$1,200,000",
+                "status": "Move-In Ready",
+                "bedrooms": "4",
+                "bathrooms": "3",
+                "sqft": "2,500",
+                "garage": "2-Car Garage",
+                "lot_size": "40 x 100 ft",
+                "stories": "2",
+                "description": "This stunning Millcroft model features an open-concept design with modern finishes, spacious bedrooms, and a beautifully landscaped yard. Perfect for families looking for a move-in ready home in a desirable community.",
+                "features": [
+                    "Open-concept layout",
+                    "Modern kitchen with stainless steel appliances",
+                    "Hardwood flooring throughout",
+                    "Finished basement",
+                    "Energy-efficient windows",
+                    "Smart home technology"
+                ],
+                "specifications": {
+                    "Heating": "Forced air, gas",
+                    "Cooling": "Central air conditioning",
+                    "Roof": "Asphalt shingles",
+                    "Exterior": "Brick and siding",
+                    "Foundation": "Poured concrete"
+                },
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/getty-images-uEHOdOdtJ5A-unsplash.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-42-millcroft-burlington-ontario/img_002.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/explore-1024x654.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-42-millcroft-burlington-ontario/img_003.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/family-3.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-42-millcroft-burlington-ontario/img_004.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/style-ideas.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-42-millcroft-burlington-ontario/img_005.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/get-connected-1024x683.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-42-millcroft-burlington-ontario/img_006.jpg",
+                        "alt": ""
+                    }
+                ],
+                "property_url": "https://www.branthaven.com/quickstart/millcroft/lot-42",
+                "local_image": "data/images/wwwbranthavencom/millcroft/lot-42-millcroft-burlington-ontario/img_002.jpg"
+            },
+            {
+                "address": "Lot 44, Millcroft, Burlington, Ontario",
+                "floorplan": "Millcroft Model",
+                "price": "Available upon request",
+                "status": "Move-In Ready",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1,800",
+                "garage": "2-car garage",
+                "lot_size": "40' x 100'",
+                "stories": "2",
+                "description": "This stunning Millcroft model features a spacious open-concept layout with modern finishes, perfect for family living and entertaining. The home includes a gourmet kitchen, large living area, and a private backyard.",
+                "features": [
+                    "Open-concept design",
+                    "Gourmet kitchen with stainless steel appliances",
+                    "Large living area with fireplace",
+                    "Master suite with ensuite bathroom",
+                    "Energy-efficient windows",
+                    "Smart home technology"
+                ],
+                "specifications": {
+                    "foundation": "Poured concrete",
+                    "roof": "Asphalt shingles",
+                    "heating": "Forced air gas",
+                    "cooling": "Central air conditioning",
+                    "flooring": "Hardwood and tile"
+                },
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/getty-images-uEHOdOdtJ5A-unsplash.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-44-millcroft-burlington-ontario/img_002.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/explore-1024x654.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-44-millcroft-burlington-ontario/img_003.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/family-3.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-44-millcroft-burlington-ontario/img_004.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/style-ideas.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-44-millcroft-burlington-ontario/img_005.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/get-connected-1024x683.jpg",
+                        "local_path": "data/images/wwwbranthavencom/millcroft/lot-44-millcroft-burlington-ontario/img_006.jpg",
+                        "alt": ""
+                    }
+                ],
+                "property_url": "https://www.branthaven.com/quickstart/millcroft/lot-44",
+                "local_image": "data/images/wwwbranthavencom/millcroft/lot-44-millcroft-burlington-ontario/img_002.jpg"
+            }
+        ],
+        "all_images": [
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/lot38-ext-rendering.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_000.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-9.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_001.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-12.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_002.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-13.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_003.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot38/Full-Size-18.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_004.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot44/lot44-ext-rendering.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_005.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-10.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_006.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-17.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_007.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-22.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_008.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot42/Full-Size-33.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_009.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot44/Full-Size-9.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_010.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot44/Full-Size-11.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_011.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot44/Full-Size-17.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_012.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/millcroft/lot44/Full-Size-34.jpg",
+                "local_path": "data/images/wwwbranthavencom/millcroft/img_013.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            }
+        ],
+        "id": 3,
+        "first_seen": "2026-04-02T20:46:56.128897",
+        "last_seen": "2026-04-02T20:46:56.128925",
+        "source_domain": "www.branthaven.com"
+    },
+    {
+        "community_name": "Queens Lane Ravine Townhomes",
+        "location": "Brampton, Ontario",
+        "builder": "Branthaven",
+        "status": "QUICKSTART",
+        "url": "https://www.branthaven.com/quickstart/queenslane",
+        "description": "Prime Lionhead Community. Large 3-Storey Ravine Towns. Rare Enclave. Private Walkouts & Forest Views. Ground level walk-out to private back yard.",
+        "price_range": "From $849,900 to $899,990",
+        "completion_date": null,
+        "total_units": null,
+        "features": [
+            "Large 3-Storey Ravine Towns",
+            "Private Walkouts",
+            "Forest Views",
+            "Up to $500K in price reductions",
+            "Over $30K in upgrades included"
+        ],
+        "amenities": [],
+        "property_types": [
+            "Townhome"
+        ],
+        "contact_phone": "905-333-6160",
+        "properties": [
+            {
+                "address": "14 Folcroft Street, Brampton",
+                "floorplan": "Devon",
+                "price": "$849,900",
+                "status": "Available",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1790",
+                "garage": null,
+                "description": "3-Storey Townhome. Upgraded Main Floor W/Chef’s Kitchen.",
+                "features": [
+                    "Over $41K in upgrades"
+                ],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/BH-QL-Kingsway-3ST-TH-Building-12_R2-LOT33-65.jpg",
+                "local_image": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_000.jpg"
+            },
+            {
+                "address": "54 Folcroft Street, Brampton",
+                "floorplan": "Devon",
+                "price": "$899,900",
+                "status": "Available",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1840",
+                "garage": null,
+                "description": "3-Storey Townhome. Upgraded Main Floor W/Chef’s Kitchen.",
+                "features": [
+                    "Over $41K in upgrades"
+                ],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/BH-QL-Kingsway-3ST-TH-Building-12_R2-LOT33-65.jpg",
+                "local_image": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_000.jpg"
+            },
+            {
+                "address": "52 Folcroft Street, Brampton",
+                "floorplan": "Devon End",
+                "price": "$899,990",
+                "status": "Available",
+                "bedrooms": "3",
+                "bathrooms": "2.5",
+                "sqft": "1835",
+                "garage": null,
+                "description": "3-Storey Townhome. Upgraded Main Floor W/Chef’s Desk. Upgraded Luxury Ensuite.",
+                "features": [
+                    "Over $51K in upgrades"
+                ],
+                "image_url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/BH-QL-Kingsway-3ST-TH-Building-12_R2-LOT33-65.jpg",
+                "local_image": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_000.jpg"
+            },
+            {
+                "address": "Lot 64, Queens Lane, Brampton, Ontario",
+                "floorplan": "Not specified",
+                "price": "Not specified",
+                "status": "Move-In Ready",
+                "bedrooms": "Not specified",
+                "bathrooms": "Not specified",
+                "sqft": "Not specified",
+                "garage": "Not specified",
+                "lot_size": "Not specified",
+                "stories": "Not specified",
+                "description": "Not specified",
+                "features": [],
+                "specifications": {},
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/getty-images-uEHOdOdtJ5A-unsplash.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-64-queens-lane-brampton-ontario/img_002.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/explore-1024x654.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-64-queens-lane-brampton-ontario/img_003.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/family-3.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-64-queens-lane-brampton-ontario/img_004.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/style-ideas.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-64-queens-lane-brampton-ontario/img_005.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/get-connected-1024x683.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-64-queens-lane-brampton-ontario/img_006.jpg",
+                        "alt": ""
+                    }
+                ],
+                "property_url": "https://www.branthaven.com/quickstart/queenslane/lot-64",
+                "local_image": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-64-queens-lane-brampton-ontario/img_002.jpg"
+            },
+            {
+                "address": "Lot 44, Queens Lane, Brampton, Ontario",
+                "floorplan": "Not specified",
+                "price": "Not specified",
+                "status": "Move-In Ready",
+                "bedrooms": "Not specified",
+                "bathrooms": "Not specified",
+                "sqft": "Not specified",
+                "garage": "Not specified",
+                "lot_size": "Not specified",
+                "stories": "Not specified",
+                "description": "Not specified",
+                "features": [],
+                "specifications": {},
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/getty-images-uEHOdOdtJ5A-unsplash.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-44-queens-lane-brampton-ontario/img_002.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/explore-1024x654.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-44-queens-lane-brampton-ontario/img_003.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/family-3.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-44-queens-lane-brampton-ontario/img_004.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/style-ideas.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-44-queens-lane-brampton-ontario/img_005.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/get-connected-1024x683.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-44-queens-lane-brampton-ontario/img_006.jpg",
+                        "alt": ""
+                    }
+                ],
+                "property_url": "https://www.branthaven.com/quickstart/queenslane/lot-44",
+                "local_image": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-44-queens-lane-brampton-ontario/img_002.jpg"
+            },
+            {
+                "address": "Lot 45, Queens Lane, Brampton",
+                "floorplan": "Not specified",
+                "price": "Not specified",
+                "status": "Move-In Ready",
+                "bedrooms": "Not specified",
+                "bathrooms": "Not specified",
+                "sqft": "Not specified",
+                "garage": "Not specified",
+                "lot_size": "Not specified",
+                "stories": "Not specified",
+                "description": "Not specified",
+                "features": [],
+                "specifications": {},
+                "property_images": [
+                    {
+                        "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/getty-images-uEHOdOdtJ5A-unsplash.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-45-queens-lane-brampton/img_002.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/explore-1024x654.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-45-queens-lane-brampton/img_003.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/family-3.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-45-queens-lane-brampton/img_004.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/style-ideas.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-45-queens-lane-brampton/img_005.jpg",
+                        "alt": ""
+                    },
+                    {
+                        "url": "https://www.branthaven.com/app/uploads/2021/10/get-connected-1024x683.jpg",
+                        "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-45-queens-lane-brampton/img_006.jpg",
+                        "alt": ""
+                    }
+                ],
+                "property_url": "https://www.branthaven.com/quickstart/queenslane/lot-45",
+                "local_image": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/lot-45-queens-lane-brampton/img_002.jpg"
+            }
+        ],
+        "all_images": [
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/BH-QL-Kingsway-3ST-TH-Building-12_R2-LOT33-65.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_000.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot64/HDR_0805.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_001.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot64/HDR_0806-spring.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_002.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot64/HDR_0807.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_003.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot64/HDR_0811.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_004.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot64/HDR_0817.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_005.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/HDR_1353.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_006.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/Queens_Lane_Packages_Lot_44_02.20.2025.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_007.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/HDR_1348.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_008.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/HDR_1350.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_009.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/HDR_1351.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_010.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/HDR_1359.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_011.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot44/HDR_1362.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_012.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1101.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_013.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/BH-QL-Kingsway-3ST-TH-Building-12_R2-LOT45.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_014.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1108.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_015.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1109.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_016.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1110.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_017.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1111.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_018.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1112.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_019.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1113.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_020.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            },
+            {
+                "url": "https://www.branthaven.com/app/themes/luxe/dist/images/quickstart/listings/queenslane/lot45/HDR_1114.jpg",
+                "local_path": "data/images/wwwbranthavencom/queens-lane-ravine-townhomes/img_021.jpg",
+                "alt": "",
+                "width": 318,
+                "height": 318
+            }
+        ],
+        "id": 4,
+        "first_seen": "2026-04-02T20:54:18.495762",
+        "last_seen": "2026-04-02T20:54:18.495791",
+        "source_domain": "www.branthaven.com"
+    }
+]
