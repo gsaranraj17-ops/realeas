@@ -3,6 +3,7 @@ import json
 import os
 import re
 import time
+import io
 import logging
 from pathlib import Path
 from datetime import datetime
@@ -11,6 +12,12 @@ from dotenv import load_dotenv
 import requests
 from playwright.async_api import async_playwright
 from openai import OpenAI
+
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
 load_dotenv()
 
@@ -23,6 +30,11 @@ logger = logging.getLogger("SmartScraper")
 
 CRAWL_DELAY = float(os.getenv("CRAWL_DELAY", 2))
 DATA_DIR = os.getenv("DATA_DIR", "data")
+
+# Communities to ALWAYS scrape regardless of their section (e.g. from "Now Selling")
+EXTRA_COMMUNITIES = [
+    "creekview-collective",
+]
 
 TARGET_KEYWORDS = [
     "coming soon", "quickstart", "quick start", "quick-start",
@@ -38,6 +50,7 @@ SKIP_IMAGE_KEYWORDS = [
     "pixel", "tracking", "badge", "arrow", "button", "avatar",
     "headshot", "career", "desk-work", "woman-kitchen",
     "uwsc_sales", "integrity.", "pride.", "quality.", "/value.",
+    "map.", "Map.",
 ]
 
 
@@ -127,19 +140,38 @@ class ImageDownloader:
             resp = self.session.get(url, timeout=30, stream=True)
             if resp.status_code != 200:
                 return None
-            ext = ".jpg"
+
+            # Read full content
+            data = resp.content
+            if len(data) < 2048:
+                return None
+
             ct = resp.headers.get("Content-Type", "").lower()
-            if "png" in ct:
+            is_webp = "webp" in ct or url.lower().endswith(".webp")
+
+            # Convert webp to jpg using Pillow
+            if is_webp and HAS_PIL:
+                try:
+                    img = Image.open(io.BytesIO(data))
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
+                    buf = io.BytesIO()
+                    img.save(buf, format="JPEG", quality=85)
+                    data = buf.getvalue()
+                    ext = ".jpg"
+                except Exception:
+                    ext = ".webp"
+            elif "png" in ct:
                 ext = ".png"
-            elif "webp" in ct:
+            elif is_webp:
                 ext = ".webp"
+            else:
+                ext = ".jpg"
+
             fp = folder / f"img_{index:03d}{ext}"
             with open(fp, "wb") as f:
-                for chunk in resp.iter_content(8192):
-                    f.write(chunk)
-            if fp.stat().st_size < 2048:
-                fp.unlink()
-                return None
+                f.write(data)
+
             return str(fp).replace("\\", "/")
         except Exception:
             return None
@@ -246,8 +278,54 @@ Return [] if none found."""
             validated.append({"url": url, "name": name, "status": status})
         return validated
 
-    def extract_community(self, text: str, url: str) -> dict | None:
-        system = f"""Extract ALL data from this Coming Soon / QuickStart / Pre-Construction community page.
+    def extract_community(self, text: str, url: str, detailed: bool = False) -> dict | None:
+        if detailed:
+            system = f"""Extract EVERY piece of information from this real-estate community page.
+Be extremely thorough — capture ALL data visible on the page.
+
+Return JSON:
+{{
+    "community_name": "Development Name",
+    "location": "Full address or City, Province",
+    "builder": "Builder/Developer Name",
+    "status": "NOW SELLING / COMING SOON / QUICKSTART",
+    "url": "{url}",
+    "description": "FULL description — combine ALL text paragraphs from the page into one detailed description",
+    "price_range": "From $XXX to $XXX or starting from $XXX",
+    "completion_date": "Expected completion/occupancy dates",
+    "total_units": "Total number of homes",
+    "deposit_structure": "Full deposit structure if mentioned",
+    "incentives": ["All incentives, promotions, included items"],
+    "features": ["EVERY feature and finish mentioned — flooring, countertops, appliances, smart home, etc."],
+    "amenities": ["ALL amenities — parks, trails, schools, transit, shopping nearby"],
+    "property_types": ["Each home type with size range, e.g. 3-Storey Townhome 1250-2305 sqft"],
+    "contact_phone": "Phone number",
+    "contact_email": "Email if shown",
+    "sales_centre": "Sales centre address if shown",
+    "properties": [
+        {{
+            "address": "Address or collection name",
+            "floorplan": "Model/floor plan name",
+            "price": "Price or starting price",
+            "status": "Status",
+            "bedrooms": "Bedroom range e.g. 3-6",
+            "bathrooms": "Bathroom count or range",
+            "sqft": "Square footage range e.g. 1250-2305",
+            "garage": "Garage type and capacity",
+            "lot_width": "Lot width if shown e.g. 20ft, 21ft, 23ft",
+            "stories": "Number of stories",
+            "description": "Full description of this home type",
+            "features": ["Specific features for this type"],
+            "image_url": "URL of the image shown for this collection/model if visible"
+        }}
+    ]
+}}
+
+IMPORTANT: Extract EVERYTHING. Include ALL floor plan types, ALL features, ALL finishes,
+ALL incentives, ALL nearby amenities. Do not summarize — capture every detail.
+If the page mentions specific models or collections, list each one as a separate property."""
+        else:
+            system = f"""Extract ALL data from this Coming Soon / QuickStart / Pre-Construction community page.
 
 Return JSON:
 {{
@@ -363,36 +441,167 @@ Return JSON array of absolute URLs. Max 25. Return [] if no property detail page
         return cleaned
 
     def filter_images(self, images: list[dict], name: str, url: str) -> list[dict]:
-        """Filter images to keep only ones relevant to this specific community/property."""
-        if not images or len(images) <= 3:
+        """Use OpenAI to classify and filter images — keep only property-relevant ones."""
+        if not images:
+            return images
+        if len(images) <= 2:
             return images
 
         entries = []
         for i, img in enumerate(images):
-            entries.append(f"{i}: {img.get('src','')} | alt={img.get('alt','')}")
+            w = img.get("width", 0) or 0
+            h = img.get("height", 0) or 0
+            entries.append(f"{i}: url={img.get('src','')} | {w}x{h} | alt={img.get('alt','')}")
 
-        system = f"""Filter images for the real-estate community/property: "{name}"
+        system = f"""You are classifying images for the real-estate community: "{name}"
 URL: {url}
 
-KEEP: renderings, exterior/interior photos of THIS community's homes,
-      floor plans, site plans, gallery images, lot-specific photos.
-      Check the URL path — images with the community name or lot numbers in the path are relevant.
+For each image, decide if it should be KEPT or REJECTED based on its URL and alt text.
 
-REJECT:
-- Generic site-wide images that appear on every page (e.g. /uploads/2021/03/Value.jpg, /uploads/2020/09/Quality.png)
-- Stock lifestyle photos (people at desks, woman on phone, generic kitchen/bathroom not specific to this community)
-- Company branding, headshots, career images
-- Images from OTHER communities (different community name in URL path)
-- Sales centre photos from other projects (e.g. UWSC_, Casa_, Fifty_, Homestead_)
+KEEP these types:
+- Exterior renderings of homes/townhomes/buildings
+- Interior photos (kitchens, bedrooms, bathrooms, living rooms)
+- Lifestyle renders showing the community
+- Floor plan images
+- Streetscape or aerial views of the community
+- Gallery/showcase images specific to this community
 
-Return JSON array of integer indices to KEEP. Example: [0, 2, 5]"""
+REJECT these types:
+- Maps, location maps, site maps (URL contains 'map' or 'Map')
+- Generic stock photos not specific to this community
+- Company logos, icons, badges
+- Images from OTHER communities (different community name in URL)
+- Career/about page images
+- Very small decorative elements
+
+Return JSON: {{"keep": [list of indices to keep], "thumbnail": index_of_best_hero_image}}
+
+The thumbnail should be the best EXTERIOR rendering or photo — wide/landscape, showing homes."""
 
         user = "\n".join(entries)
         result = self._call(system, user, max_tokens=1024)
-        if not isinstance(result, list):
-            return images
-        filtered = [images[i] for i in result if isinstance(i, int) and 0 <= i < len(images)]
+
+        if isinstance(result, dict):
+            keep_indices = result.get("keep", [])
+            if isinstance(keep_indices, list) and keep_indices:
+                filtered = [images[i] for i in keep_indices if isinstance(i, int) and 0 <= i < len(images)]
+                if filtered:
+                    # Mark the thumbnail
+                    thumb_idx = result.get("thumbnail")
+                    if isinstance(thumb_idx, int) and 0 <= thumb_idx < len(images):
+                        # Move thumbnail to front
+                        thumb_img = images[thumb_idx]
+                        if thumb_img in filtered:
+                            filtered.remove(thumb_img)
+                            filtered.insert(0, thumb_img)
+                    return filtered
+
+        # Fallback: basic URL filtering
+        filtered = []
+        for img in images:
+            src = (img.get("src") or "").lower()
+            if "map" in src or "Map" in img.get("src", ""):
+                continue
+            filtered.append(img)
         return filtered if filtered else images
+
+    def pick_thumbnail(self, images: list[dict], name: str) -> int:
+        """Use OpenAI Vision to analyze images and pick the best property exterior as thumbnail."""
+        if not images:
+            return 0
+        if len(images) == 1:
+            return 0
+
+        # Pre-filter: skip obvious non-building images by URL keywords
+        skip_words = ["lifestyle", "kitchen", "bedroom", "bathroom", "garage",
+                       "backyard", "outdoor", "interior", "ensuite", "amenit",
+                       "person", "people", "family"]
+        prefer_words = ["exterior", "front", "streetscape", "facade", "elevation",
+                        "rendering", "collections", "building", "townhome", "town-"]
+
+        # Score each image: prefer exterior-looking URLs, penalize interior/lifestyle
+        scored = []
+        for i, img in enumerate(images):
+            src = (img.get("url") or img.get("src", "")).lower()
+            score = 0
+            for kw in prefer_words:
+                if kw in src:
+                    score += 10
+            for kw in skip_words:
+                if kw in src:
+                    score -= 10
+            w = img.get("width", 0) or 0
+            h = img.get("height", 0) or 0
+            if w > h:  # landscape bonus
+                score += 2
+            scored.append((i, score))
+
+        # Sort by score descending, take top 8 as candidates for vision
+        scored.sort(key=lambda x: -x[1])
+        candidate_indices = [s[0] for s in scored[:8]]
+        candidates = [(idx, images[idx]) for idx in candidate_indices]
+
+        self.calls += 1
+
+        try:
+            content = [
+                {"type": "text", "text": f"""You are selecting the BEST thumbnail for a real-estate community called "{name}".
+
+Look at these images and pick the ONE that shows the PROPERTY EXTERIOR — the OUTSIDE of homes/townhomes/buildings.
+
+PICK: exterior rendering showing the FRONT of homes, streetscape, building facade, community entrance.
+DO NOT PICK: interior photos (kitchens, bedrooms, bathrooms), lifestyle photos with people, backyards, garages, parks, amenities.
+
+Reply ONLY with JSON: {{"pick": <number>, "reason": "brief reason"}}
+where <number> is the label number shown before each image."""}
+            ]
+
+            for idx, img in candidates:
+                src = img.get("url") or img.get("src", "")
+                if src:
+                    content.append({"type": "text", "text": f"Image {idx}:"})
+                    content.append({"type": "image_url", "image_url": {"url": src, "detail": "low"}})
+
+            resp = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": content}],
+                max_tokens=100,
+                temperature=0,
+                timeout=30,
+            )
+
+            raw = resp.choices[0].message.content.strip()
+            if "```json" in raw:
+                raw = raw.split("```json")[1].split("```")[0].strip()
+            elif "```" in raw:
+                raw = raw.split("```")[1].split("```")[0].strip()
+
+            result = json.loads(raw)
+            idx = result.get("pick") or result.get("index")
+            reason = result.get("reason", "")
+            if isinstance(idx, int) and 0 <= idx < len(images):
+                logger.info("  → Vision picked thumbnail %d: %s", idx, reason)
+                return idx
+
+        except Exception as e:
+            logger.warning("  → Vision thumbnail failed: %s — using URL fallback", e)
+
+        # Fallback: use the highest-scored image from URL analysis
+        for idx, score in scored:
+            if score > 0:
+                return idx
+
+        # Last fallback: largest landscape image
+        best, best_score = 0, 0
+        for i, img in enumerate(images):
+            w = img.get("width", 0) or 0
+            h = img.get("height", 0) or 0
+            if w > h:
+                s = w * h
+                if s > best_score:
+                    best_score = s
+                    best = i
+        return best
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -561,6 +770,82 @@ async def get_section_tagged_links(page) -> list[dict]:
         return []
 
 
+async def _click_through_page(page):
+    """Click through carousels, sliders, tabs, and interactive elements to reveal ALL content."""
+
+    # Click carousel/slider next buttons multiple times
+    next_selectors = [
+        '.swiper-button-next', '.slick-next', '.elementor-swiper-button-next',
+        '[class*="carousel"] [class*="next"]', '[class*="slider"] [class*="next"]',
+        'button[aria-label*="next" i]', '[class*="swipe"] [class*="next"]',
+        '.owl-next', '[class*="arrow-right"]', '[class*="arrow-next"]',
+    ]
+    for sel in next_selectors:
+        try:
+            buttons = await page.query_selector_all(sel)
+            for btn in buttons:
+                if await btn.is_visible():
+                    for _ in range(10):
+                        try:
+                            await btn.click(timeout=800)
+                            await page.wait_for_timeout(500)
+                        except Exception:
+                            break
+        except Exception:
+            continue
+
+    # Click pagination dots (reveals different slides)
+    for sel in ['.swiper-pagination-bullet', '.slick-dots button', '.owl-dot',
+                '[class*="pagination"] button', '[class*="dot"]']:
+        try:
+            dots = await page.query_selector_all(sel)
+            for dot in dots:
+                if await dot.is_visible():
+                    await dot.click(timeout=800)
+                    await page.wait_for_timeout(500)
+        except Exception:
+            continue
+
+    # Click tabs and accordion headers
+    for sel in ['[role="tab"]', '.tab', '[class*="tab-link"]', '[class*="tab-btn"]',
+                '.accordion-header', '[class*="accordion"] button',
+                '.elementor-tab-title', '.elementor-toggle-title']:
+        try:
+            items = await page.query_selector_all(sel)
+            for item in items:
+                if await item.is_visible():
+                    await item.click(timeout=800)
+                    await page.wait_for_timeout(600)
+        except Exception:
+            continue
+
+    # Click "load more" / "view all" / "see more" buttons
+    for sel in [
+        'button:has-text("Load More")', 'button:has-text("View All")',
+        'button:has-text("Show More")', 'button:has-text("See More")',
+        'a:has-text("View All")', 'a:has-text("See More")',
+        'button:has-text("Read More")', 'a:has-text("Read More")',
+    ]:
+        try:
+            btn = await page.query_selector(sel)
+            if btn and await btn.is_visible():
+                await btn.click(timeout=2000)
+                await page.wait_for_timeout(1500)
+        except Exception:
+            continue
+
+    # Scroll through the entire page slowly to trigger lazy loading
+    try:
+        total_height = await page.evaluate("document.body.scrollHeight")
+        for pos in range(0, total_height, 400):
+            await page.evaluate(f"window.scrollTo(0, {pos})")
+            await page.wait_for_timeout(300)
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(500)
+    except Exception:
+        pass
+
+
 async def get_content_images(page) -> list[dict]:
     """Get ALL visible images from the page. Only skip by URL keywords — no DOM position filtering
     since many builder sites put images in unusual containers."""
@@ -568,7 +853,7 @@ async def get_content_images(page) -> list[dict]:
         return await page.evaluate("""() => {
             const skipUrl = [
                 'logo','icon','cookie','favicon','sprite','social','pixel',
-                'tracking','badge','arrow','button','avatar','/value.',
+                'tracking','badge','arrow','button','avatar','/value.','Map','map.',
             ];
             const imgs = [], seen = new Set();
             
@@ -715,6 +1000,43 @@ class Scraper:
                         targets[url] = {"url": url, "name": name, "status": "QUICKSTART"}
                         logger.info("    ★ QUICKSTART | %s", name)
 
+            # 3) Add extra communities from EXTRA_COMMUNITIES list
+            # These are scraped regardless of their section (e.g. "Now Selling")
+            if EXTRA_COMMUNITIES:
+                logger.info("  Checking %d extra communities...", len(EXTRA_COMMUNITIES))
+                # Collect all links from the communities page we already visited
+                all_page_links = page_links if 'page_links' in dir() else []
+                for extra_slug in EXTRA_COMMUNITIES:
+                    # Try to find the URL from collected links
+                    found = False
+                    for l in all_page_links:
+                        link_url = l["url"].split("#")[0].rstrip("/")
+                        link_path = urlparse(link_url).path.rstrip("/").lower()
+                        if extra_slug in link_path and link_url not in targets:
+                            name = l["text"].strip() or extra_slug.replace("-", " ").title()
+                            for rm in ["NOW SELLING", "CALL NOW", "EMAIL NOW", "REGISTER"]:
+                                name = name.replace(rm, "").replace(rm.lower(), "")
+                            name = " ".join(name.split()).strip(" ·-–—/\\|")
+                            if len(name) < 3:
+                                name = extra_slug.replace("-", " ").title()
+                            targets[link_url] = {"url": link_url, "name": name, "status": "NOW SELLING"}
+                            logger.info("    ★ EXTRA | %s | %s", name, link_url)
+                            found = True
+                            break
+                    if not found:
+                        # Construct URL directly
+                        for prefix in ["/communities/", "/quickstart/"]:
+                            candidate = base + prefix + extra_slug
+                            if candidate.rstrip("/") not in targets:
+                                targets[candidate.rstrip("/")] = {
+                                    "url": candidate,
+                                    "name": extra_slug.replace("-", " ").title(),
+                                    "status": "NOW SELLING",
+                                }
+                                logger.info("    ★ EXTRA | %s | %s",
+                                             extra_slug.replace("-", " ").title(), candidate)
+                                break
+
         finally:
             await page.close()
             await ctx.close()
@@ -754,12 +1076,21 @@ class Scraper:
                     if not await load_page(page, url, ph):
                         continue
 
+                    # Check if this is an extra community — needs thorough scraping
+                    is_extra = any(ex in url.lower() for ex in EXTRA_COMMUNITIES)
+
                     await smart_scroll(page, rounds=10)
+
+                    # For extra communities, try clicking through carousels/tabs/sliders
+                    if is_extra:
+                        logger.info("  → Extra community: clicking carousels and tabs...")
+                        await _click_through_page(page)
+
                     text = await get_text(page)
 
                     # Extract community data
                     logger.info("  → Extracting details...")
-                    data = self.agent.extract_community(text, url)
+                    data = self.agent.extract_community(text, url, detailed=is_extra)
                     if not data:
                         logger.warning("  ✗ Failed to extract data")
                         continue
@@ -767,7 +1098,11 @@ class Scraper:
                     # Validate status — use original target status if LLM extraction changed it
                     extracted_status = data.get("status", "")
                     original_status = target.get("status", "")
-                    if not is_target_status(extracted_status):
+
+                    # Check if this is an extra community (always allowed)
+                    is_extra = any(ex in url.lower() for ex in EXTRA_COMMUNITIES)
+
+                    if not is_extra and not is_target_status(extracted_status):
                         # If the LLM changed the status but we know it's a target, use original
                         if is_target_status(original_status):
                             data["status"] = original_status
@@ -776,8 +1111,13 @@ class Scraper:
                         else:
                             logger.warning("  ✗ Status '%s' not coming soon/quickstart — skip", extracted_status)
                             continue
+
+                    # For extra communities, keep whatever status was extracted or use original
+                    if is_extra and not extracted_status:
+                        data["status"] = original_status
+
                     # Preserve quickstart status — don't let LLM downgrade to "COMING SOON"
-                    if "quickstart" in original_status.lower() and "quickstart" not in data["status"].lower():
+                    if "quickstart" in original_status.lower() and "quickstart" not in data.get("status", "").lower():
                         data["status"] = "QUICKSTART"
 
                     domain_slug = slugify(urlparse(url).netloc)
@@ -800,6 +1140,12 @@ class Scraper:
                                 "width": img.get("width"), "height": img.get("height"),
                             })
                     data["all_images"] = downloaded
+                    # Use OpenAI Vision to pick the best property exterior as thumbnail
+                    if downloaded:
+                        thumb_idx = self.agent.pick_thumbnail(downloaded, data.get("community_name", ""))
+                        data["thumbnail_url"] = downloaded[thumb_idx]["url"]
+                        data["thumbnail_local"] = downloaded[thumb_idx].get("local_path", "")
+                        logger.info("  ✓ Thumbnail: %s", downloaded[thumb_idx]["url"][:80])
                     logger.info("  ✓ %d images downloaded", len(downloaded))
 
                     # ── Property sub-pages ────────────────────────────────
@@ -846,33 +1192,55 @@ class Scraper:
                     data["properties"] = properties
 
                     # Assign community images to properties that have none
-                    # For quickstart pages, community images are often lot-specific
                     comm_images = data.get("all_images", [])
                     if comm_images:
                         for prop in properties:
-                            if prop.get("property_images"):
-                                continue  # already has images from sub-page
-                            # Try to match by lot/unit number in the image URL
+                            if prop.get("property_images") or prop.get("image_url"):
+                                continue
+
                             addr = (prop.get("address") or "").lower()
                             floorplan = (prop.get("floorplan") or "").lower()
                             matched = []
+
                             for img in comm_images:
                                 img_url = img.get("url", "").lower()
-                                # Match lot number: "lot 38" matches "lot38" in URL
+
+                                # Match by lot/unit number
                                 for term in [addr, floorplan]:
-                                    # Extract numbers from address like "Unit 38" or "Lot 42"
                                     nums = re.findall(r'\d+', term)
                                     for num in nums:
                                         if f"lot{num}" in img_url or f"lot-{num}" in img_url or f"unit{num}" in img_url:
                                             matched.append(img)
                                             break
+
+                                # Match by collection name keywords
+                                for keyword in ["3storey", "3-storey", "back-to-back", "backtoback",
+                                                "2storey", "2-storey", "backyard", "rear_lane",
+                                                "rear-lane", "traditional"]:
+                                    if keyword in floorplan.replace(" ", "").replace("-", "") and keyword.replace("-", "").replace("_", "") in img_url.replace("-", "").replace("_", ""):
+                                        if img not in matched:
+                                            matched.append(img)
+
+                                # Match by collection number in URL (e.g. Collections_1, Collections_2)
+                                if "3-storey" in floorplan or "3 storey" in floorplan:
+                                    if "collections_1" in img_url or "3storey" in img_url.replace("-",""):
+                                        if img not in matched:
+                                            matched.append(img)
+                                elif "back to back" in floorplan or "back-to-back" in floorplan:
+                                    if "collections_2" in img_url or "back-to-back" in img_url:
+                                        if img not in matched:
+                                            matched.append(img)
+                                elif "2-storey" in floorplan or "2 storey" in floorplan or "backyard" in floorplan:
+                                    if "collections_3" in img_url or "2storey" in img_url.replace("-","") or "backyard" in img_url:
+                                        if img not in matched:
+                                            matched.append(img)
+
                             if matched:
                                 prop["property_images"] = matched
                                 prop["image_url"] = matched[0]["url"]
                                 if matched[0].get("local_path"):
                                     prop["local_image"] = matched[0]["local_path"]
                             elif comm_images:
-                                # Fallback: assign first community image
                                 prop["image_url"] = comm_images[0]["url"]
                                 if comm_images[0].get("local_path"):
                                     prop["local_image"] = comm_images[0]["local_path"]
